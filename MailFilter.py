@@ -1,4 +1,4 @@
-from exchangelib import DELEGATE, Account, Credentials
+from exchangelib import DELEGATE, Account, Credentials, Message, Mailbox
 from bs4 import BeautifulSoup
 from markdown import markdown
 import pandas as pd
@@ -29,11 +29,24 @@ class MailFilter:
             password=js["password"]
         )
         self._account = Account(
-            primary_smtp_address=js["server"],
+            primary_smtp_address=js["mail"],
             credentials=self._credentials,
             autodiscover=True,
             access_type=DELEGATE
         )
+
+        self._credentials_ai = Credentials(
+            username=js["username-ai"],
+            password=js["password-ai"]
+        )
+        self._account_ai = Account(
+            primary_smtp_address=js["mail-ai"],
+            credentials=self._credentials_ai,
+            autodiscover=True,
+            access_type=DELEGATE
+        )
+
+        self._recipient = js["recipient"]
 
     def test_conn(self):
         # Print first 10 inbox messages in reverse order
@@ -133,3 +146,45 @@ class MailFilter:
             print(prediction)
             if np.argmax(prediction) == 1:
                 print("x"*50)
+
+    def apply(self):
+
+        #print("start apply...")
+        model = tf.keras.models.load_model(self._model_fname)
+        with open(self._tokenizer_fname, 'rb') as handle:
+            tokenizer = pickle.load(handle)
+
+        try:
+            for item in self._account_ai.inbox.all().order_by('-datetime_received')[:]:
+                print("iterate mails...")
+                html = markdown(item.body)
+                body = ''.join(BeautifulSoup(html, features="lxml").getText())
+                email = body.strip().replace("\n", " ")
+
+                email_sequence = tokenizer.texts_to_sequences([email])
+                email_padded = tf.keras.preprocessing.sequence.pad_sequences(email_sequence)
+                email_padded = np.array(email_padded)
+
+                prediction = model.predict(email_padded)
+                print(item.subject)
+                print("Wurde vom KNN erkannt als (Wahrscheinlichkeiten):")
+                print(prediction)
+
+                print("sending mail...")
+                m = Message(
+                    account=self._account_ai,
+                    subject= "###" + str(np.argmax(prediction))+ "### " + item.subject,
+                    body=item.body,
+                    to_recipients=[
+                        Mailbox(email_address=self._recipient)
+                    ]
+                )
+                m.send()
+                item.delete()
+                print("mail sent...")
+
+
+        except Exception:
+            print("no mails...")
+
+        #print("stop apply...")
