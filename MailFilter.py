@@ -1,3 +1,7 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+
 from exchangelib import DELEGATE, Account, Credentials, Message, Mailbox
 from bs4 import BeautifulSoup
 from markdown import markdown
@@ -63,7 +67,7 @@ class MailFilter:
         self._recipient = js["recipient"]
 
     def test_conn(self):
-        # Print first 10 inbox messages in reverse order
+
         for item in self._account.inbox.all().order_by('-datetime_received')[:10]:
             html = markdown(item.body)
             body = ''.join(BeautifulSoup(html, features="lxml").getText())

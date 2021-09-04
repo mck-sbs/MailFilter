@@ -13,3 +13,12 @@ Use ***train()*** function to train your ai with tensorflow and store the model.
 
 ### 4. apply
 Use ***apply_to_account()*** to classify mails (office@mail.com) and move them in "ham" or "spam" subfolders in your inbox (create these folders manually in your inbox).
+
+___________________________________________________________________________________________
+
+This Source Code Form is subject to the terms of the Mozilla Public
+License, v. 2.0. If a copy of the MPL was not distributed with this
+file, You can obtain one at https://mozilla.org/MPL/2.0/.
+
+(c) 2021, Metin Karatas (m.karatas@sbs-herzogenaurach.de)
+
