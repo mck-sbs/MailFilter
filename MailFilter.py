@@ -21,7 +21,7 @@ class MailFilter:
         self._csv_fname = "./data/mail_exported.CSV"
         self._model_fname = "./data/spamModel"
         #self._sequences_len = 0
-        self._tokenizer_fname = "./data/token"
+        self._tokenizer_fname = "./data/token.pickle"
         self._json_fname = "./data/cred.json"
 
         self._folder_spam = "unwichtig"
