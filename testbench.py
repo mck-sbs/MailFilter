@@ -6,7 +6,7 @@ tic = perf_counter()
 
 mailFilter = MailFilter()
 mailFilter.conn_init()
-mailFilter.train()
+#mailFilter.train()
 #mailFilter.test()
 
 #while True:
