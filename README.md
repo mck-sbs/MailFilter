@@ -1,5 +1,5 @@
 # MailFilter
-### Mail classification with tensorflow
+### Mail classification with tensorflow and MS Exchange Server
 
 ## workflow
 You need two mail accounts, here office@mail.com (your working account) and filter@mail.com (collect labeled data).
