@@ -49,6 +49,17 @@ class MailFilter:
             access_type=DELEGATE
         )
 
+        self._credentials_main = Credentials(
+            username=js["username-main"],
+            password=js["password-main"]
+        )
+        self._account_main = Account(
+            primary_smtp_address=js["mail-main"],
+            credentials=self._credentials_ai,
+            autodiscover=True,
+            access_type=DELEGATE
+        )
+
         self._recipient = js["recipient"]
 
     def test_conn(self):
@@ -200,7 +211,7 @@ class MailFilter:
             tokenizer = pickle.load(handle)
 
         try:
-            for item in self._account_ai.inbox.all().order_by('-datetime_received')[:]:
+            for item in self._account_main.inbox.all().order_by('-datetime_received')[:]:
                 print("iterate mails...")
 
                 html = markdown(item.body)
