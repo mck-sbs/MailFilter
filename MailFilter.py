@@ -20,6 +20,9 @@ class MailFilter:
         self._tokenizer_fname = "./data/token"
         self._json_fname = "./data/cred.json"
 
+        self._folder_spam = "unwichtig"
+        self._folder_ham = "wichtig"
+
     def conn_init(self):
         with open(self._json_fname) as f:
             js = json.load(f)
@@ -157,6 +160,7 @@ class MailFilter:
         try:
             for item in self._account_ai.inbox.all().order_by('-datetime_received')[:]:
                 print("iterate mails...")
+
                 html = markdown(item.body)
                 body = ''.join(BeautifulSoup(html, features="lxml").getText())
                 email = body.strip().replace("\n", " ")
@@ -188,3 +192,38 @@ class MailFilter:
             print("no mails...")
 
         #print("stop apply...")
+
+    def apply_to_account(self):
+
+        model = tf.keras.models.load_model(self._model_fname)
+        with open(self._tokenizer_fname, 'rb') as handle:
+            tokenizer = pickle.load(handle)
+
+        try:
+            for item in self._account_ai.inbox.all().order_by('-datetime_received')[:]:
+                print("iterate mails...")
+
+                html = markdown(item.body)
+                body = ''.join(BeautifulSoup(html, features="lxml").getText())
+                email = body.strip().replace("\n", " ")
+
+                email_sequence = tokenizer.texts_to_sequences([email])
+                email_padded = tf.keras.preprocessing.sequence.pad_sequences(email_sequence)
+                email_padded = np.array(email_padded)
+
+                prediction = model.predict(email_padded)
+                print(item.subject)
+                print("Wurde vom KNN erkannt als (Wahrscheinlichkeiten):")
+                print(prediction)
+
+                if np.argmax(prediction) == 1:
+                    folder = self._account_ai.inbox / self._folder_ham
+                else:
+                    folder = self._account_ai.inbox / self._folder_spam
+
+                item.move(folder)
+                item.refresh()
+
+
+        except Exception:
+            print("no mails...")

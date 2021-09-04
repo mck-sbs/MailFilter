@@ -10,7 +10,7 @@ mailFilter.conn_init()
 #mailFilter.test()
 
 while True:
-    mailFilter.apply()
+    mailFilter.apply_to_account()
     time.sleep(10)
 
 toc = perf_counter()
