@@ -2,7 +2,7 @@
 ### Mail classification with tensorflow and MS Exchange Server
 
 ## workflow
-You need two mail accounts, here office@mail.com (your working account) and filter@mail.com (collect labeled data).
+You need two mail accounts, here office@mail.com (your work account) and filter@mail.com (collect labeled data).
 
 ### 1. collect train and test data
 Configure quicksteps in MS Outlook (office@mail.com) to change mail subjects form "bla bla bla" to "###ham### bla ..." and forward it to a new mail address (filter@mail.com). Do the same for spam.
