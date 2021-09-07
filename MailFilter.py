@@ -21,7 +21,7 @@ class MailFilter:
         self._csv_fname = "./data/mail_exported.CSV"
         self._model_fname = "./data/spamModel"
         #self._sequences_len = 0
-        self._tokenizer_fname = "./data/token.pickle"
+        self._tokenizer_fname = "./data/token"
         self._json_fname = "./data/cred.json"
 
         self._folder_spam = "unwichtig"
@@ -59,11 +59,14 @@ class MailFilter:
         )
         self._account_main = Account(
             primary_smtp_address=js["mail-main"],
-            credentials=self._credentials_ai,
+            credentials=self._credentials_main,
             autodiscover=True,
             access_type=DELEGATE
         )
 
+
+
+        print(self._credentials_main)
         self._recipient = js["recipient"]
 
     def test_conn(self):
@@ -232,9 +235,9 @@ class MailFilter:
                 print(prediction)
 
                 if np.argmax(prediction) == 1:
-                    folder = self._account_ai.inbox / self._folder_ham
+                    folder = self._account_main.inbox / self._folder_ham
                 else:
-                    folder = self._account_ai.inbox / self._folder_spam
+                    folder = self._account_main.inbox / self._folder_spam
 
                 item.move(folder)
                 item.refresh()
